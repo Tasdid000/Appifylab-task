@@ -24,7 +24,7 @@ const UserProfile = () => {
           {/* Update Personal Information and Profile section*/}
           <div className="pt-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white shadow-sm rounded-xl p-8">
+              <div className="bg-gray-100 shadow-sm rounded-xl p-8">
                 <UserProfileUpdate userData={userData} />
               </div>
             </div>
@@ -33,7 +33,7 @@ const UserProfile = () => {
           {/* Change Password section*/}
           <div className="pt-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white shadow-sm rounded-xl p-8">
+              <div className="bg-gray-100 shadow-sm rounded-xl p-8">
                 <ChangePassword />
               </div>
             </div>

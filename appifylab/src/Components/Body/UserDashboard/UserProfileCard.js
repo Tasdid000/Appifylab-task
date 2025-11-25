@@ -42,7 +42,7 @@ const UserProfileCard = ({ userData }) => {
           <img
             src={`http://127.0.0.1:8000${userData.data.image}`}
             alt='User'
-            className="w-32 h-32 rounded-full border-4 border-white object-cover"
+            className="w-32 h-32 rounded-full border-4 border-gray-100 object-cover"
           />
         </div>
 

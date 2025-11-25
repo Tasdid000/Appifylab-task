@@ -12,11 +12,10 @@ const Body = () => {
     return (
         <div>
             <Routes>
-                <Route path="/" element={<Home />} />
-               
+                <Route path="/" element={<PrivateRoute element={<Home />} />} />
                 <Route path="/login" element={isAuthenticated() ? <Navigate to="/" /> : <LoginPage />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/createFeed" element={<CreateFeed />} /> 
+                <Route path="/createFeed" element={<PrivateRoute element={<CreateFeed />} />} />
                 <Route path="/dashboard/*" element={<PrivateRoute element={<UserComponents />} />} />             
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>

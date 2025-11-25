@@ -1,185 +1,262 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Label, FormGroup, Row, Col } from 'reactstrap';
-import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import './styles.css';
 import Googlelogin from './googleligin';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Register = () => {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [first_name, setFirstName] = useState('');
-    const [last_name, setLastName] = useState('');
-    const [password2, setPassword2] = useState('');
+  const navigate = useNavigate();
 
-    const [errors, setErrors] = useState({});
-    const [emailExistsError, setEmailExistsError] = useState('');
-    const [registrationError, setRegistrationError] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [errors, setErrors] = useState({});
+  const [emailExistsError, setEmailExistsError] = useState('');
+  const [registrationError, setRegistrationError] = useState('');
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showPassword2, setShowPassword2] = useState(false);
+  const validate = () => {
+    let newErrors = {};
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
-    const validate = () => {
-        let newErrors = {};
+    if (!firstName.trim()) newErrors.firstName = "Please enter your first name.";
+    if (!lastName.trim()) newErrors.lastName = "Please enter your last name.";
+    if (!email) newErrors.email = "Please enter your email.";
+    else if (!emailRegex.test(email)) newErrors.email = "Please enter a valid email address.";
+    if (!password) newErrors.password = "Please enter a password.";
+    if (!password2) newErrors.password2 = "Please confirm your password.";
+    else if (password !== password2) newErrors.password2 = "Passwords do not match";
 
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-        if (!first_name) newErrors.first_name = "Please enter your first name.";
-        if (!last_name) newErrors.last_name = "Please enter your last name.";
-        if (!email) newErrors.email = "Please enter your email.";
-        else if (!emailRegex.test(email)) newErrors.email = "Please enter a valid email address.";
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setEmailExistsError('');
+    setRegistrationError('');
+    setErrors({});
 
-        if (!password) newErrors.password = "Please enter a password.";
-        if (!password2) newErrors.password2 = "Please confirm your password.";
-        else if (password !== password2) newErrors.password2 = "Passwords do not match";
+    if (!validate()) return;
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    try {
+      const response = await fetch('http://127.0.0.1:8000/apiv1/user/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          email: email.toLowerCase(),
+          password,
+          password2
+        }),
+      });
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        setEmailExistsError('');
-        setRegistrationError('');
+      const data = await response.json();
 
-        if (!validate()) return;
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/apiv1/user/register/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, first_name, last_name, password, password2 }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                if (response.status === 409 && data.errors?.email) {
-                    setEmailExistsError("Email already exists");
-                } else {
-                    setRegistrationError("Registration failed. Please try again.");
-                }
-                return;
-            }
-
-            navigate('/');
-        } catch (error) {
-            setRegistrationError("An unexpected error occurred: " + error.message);
+      if (!response.ok) {
+        if (response.status === 409 && data.errors?.email) {
+          setEmailExistsError("This email is already registered");
+        } else {
+          setRegistrationError("Registration failed. Please try again.");
         }
-    };
+        return;
+      }
 
-    return (
-        <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-500'>
-            <Row className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-                <Col md="5" className='hidden md:flex'>
-                    <img
-                        src='/assets/undraw_secure_login_pdn4.svg'
-                        className='w-full h-full'
-                        alt="Registration Visual"
-                    />
-                </Col>
+      navigate('/login');
+    } catch (error) {
+      setRegistrationError("Network error. Please check your connection.");
+    }
+  };
 
-                <Col md="7" className='p-8'>
-                    <h2 className='text-3xl font-bold text-center mb-6'>Register</h2>
+  return (
+    <section className="_social_registration_wrapper _layout_main_wrapper">
+      {/* Background Shapes */}
+      <div className="_shape_one">
+        <img src="/assets/shape1.svg" alt="" className="_shape_img" />
+        <img src="/assets/dark_shape.svg" alt="" className="_dark_shape" />
+      </div>
+      <div className="_shape_two">
+        <img src="/assets/shape2.svg" alt="" className="_shape_img" />
+        <img src="/assets/dark_shape1.svg" alt="" className="_dark_shape _dark_shape_opacity" />
+      </div>
+      <div className="_shape_three">
+        <img src="/assets/shape3.svg" alt="" className="_shape_img" />
+        <img src="/assets/dark_shape2.svg" alt="" className="_dark_shape _dark_shape_opacity" />
+      </div>
 
-                    {registrationError && <div className="text-red-600 text-center mb-4">{registrationError}</div>}
-                    {emailExistsError && <div className="text-red-600 text-center mb-4">{emailExistsError}</div>}
+      <div className="_social_registration_wrap">
+        <div className="container">
+          <div className="row align-items-center">
+            {/* Left Side - Image */}
+            <div className="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+              <div className="_social_registration_right">
+                <div className="_social_registration_right_image">
+                  <img src="/assets/registration.png" alt="Registration" />
+                </div>
+                <div className="_social_registration_right_image_dark">
+                  <img src="/assets/registration1.png" alt="Registration Dark" />
+                </div>
+              </div>
+            </div>
 
-                    <Form className='space-y-4' onSubmit={handleRegister}>
+            {/* Right Side - Form */}
+            <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+              <div className="_social_registration_content">
+                {/* Logo */}
+                <div className="_social_registration_right_logo _mar_b28">
+                  <img src="/assets/logo.svg" alt="Logo" className="_right_logo" />
+                </div>
 
-                        {/* First & Last Name */}
-                        <div className="flex flex-col md:flex-row md:space-x-4">
-                            <FormGroup className="flex-1">
-                                <Label>Your First Name *</Label>
-                                <Input
-                                    type='text'
-                                    value={first_name}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
-                                {errors.first_name && <p className="text-red-600">{errors.first_name}</p>}
-                            </FormGroup>
+                <p className="_social_registration_content_para _mar_b8">Get Started Now</p>
+                <h4 className="_social_registration_content_title _titl4 _mar_b50">Registration</h4>
 
-                            <FormGroup className="flex-1">
-                                <Label>Your Last Name *</Label>
-                                <Input
-                                    type='text'
-                                    value={last_name}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                                {errors.last_name && <p className="text-red-600">{errors.last_name}</p>}
-                            </FormGroup>
-                        </div>
+                {/* Google Registration */}
+                <div className="_mar_b40 text-center">
+                  <Googlelogin />
+                </div>
 
-                        {/* Email */}
-                        <FormGroup>
-                            <Label>Your Email *</Label>
-                            <Input
-                                type='email'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            {errors.email && <p className="text-red-600">{errors.email}</p>}
-                        </FormGroup>
+                <div className="_social_registration_content_bottom_txt _mar_b40">
+                  <span>Or</span>
+                </div>
 
-                        {/* Password */}
-                        <FormGroup>
-                            <Label>Password *</Label>
-                            <div className="relative">
-                                <Input
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                                <span
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                                >
-                                    {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-                                </span>
-                            </div>
-                            {errors.password && <p className="text-red-600">{errors.password}</p>}
-                        </FormGroup>
+                {/* Server Errors */}
+                {emailExistsError && (
+                  <div className="alert alert-danger text-center mb-3 py-2 rounded">
+                    {emailExistsError}
+                  </div>
+                )}
+                {registrationError && (
+                  <div className="alert alert-danger text-center mb-3 py-2 rounded">
+                    {registrationError}
+                  </div>
+                )}
 
-                        {/* Confirm Password */}
-                        <FormGroup>
-                            <Label>Confirm Password *</Label>
-                            <div className="relative">
-                                <Input
-                                    type={showPassword2 ? "text" : "password"}
-                                    value={password2}
-                                    onChange={(e) => setPassword2(e.target.value)}
-                                />
-                                <span
-                                    onClick={() => setShowPassword2(!showPassword2)}
-                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                                >
-                                    {showPassword2 ? <AiFillEyeInvisible /> : <AiFillEye />}
-                                </span>
-                            </div>
-                            {errors.password2 && <p className="text-red-600">{errors.password2}</p>}
-                        </FormGroup>
-
-                        <button
-                            type="submit"
-                            className='w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600'
-                        >
-                            Register
-                        </button>
-                    </Form>
-
-                    <div className="mt-6 px-16 text-center">
-                        <p className="mb-2">OR</p>
-                        <Googlelogin />
+                {/* Registration Form */}
+                <form className="_social_registration_form" onSubmit={handleRegister}>
+                  <div className="row">
+                    {/* First Name */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_registration_form_input _mar_b14">
+                        <label className="_social_registration_label _mar_b8">First Name</label>
+                        <input
+                          type="text"
+                          className={`form-control _social_registration_input ${errors.firstName ? 'border-danger' : ''}`}
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                        />
+                        {errors.firstName && <div className="text-danger small mt-1">{errors.firstName}</div>}
+                      </div>
                     </div>
 
-                    <p className='text-center mt-4'>
-                        Have an account? <Link to='/login' className='text-blue-500 underline'>Sign In</Link>
-                    </p>
-                </Col>
-            </Row>
+                    {/* Last Name */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_registration_form_input _mar_b14">
+                        <label className="_social_registration_label _mar_b8">Last Name</label>
+                        <input
+                          type="text"
+                          className={`form-control _social_registration_input ${errors.lastName ? 'border-danger' : ''}`}
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                        />
+                        {errors.lastName && <div className="text-danger small mt-1">{errors.lastName}</div>}
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_registration_form_input _mar_b14">
+                        <label className="_social_registration_label _mar_b8">Email</label>
+                        <input
+                          type="email"
+                          className={`form-control _social_registration_input ${errors.email ? 'border-danger' : ''}`}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                        {errors.email && <div className="text-danger small mt-1">{errors.email}</div>}
+                      </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_registration_form_input _mar_b14">
+                        <label className="_social_registration_label _mar_b8">Password</label>
+                        <input
+                          type="password"
+                          className={`form-control _social_registration_input ${errors.password ? 'border-danger' : ''}`}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                        {errors.password && <div className="text-danger small mt-1">{errors.password}</div>}
+                      </div>
+                    </div>
+
+                    {/* Repeat Password */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_registration_form_input _mar_b14">
+                        <label className="_social_registration_label _mar_b8">Repeat Password</label>
+                        <input
+                          type="password"
+                          className={`form-control _social_registration_input ${errors.password2 ? 'border-danger' : ''}`}
+                          value={password2}
+                          onChange={(e) => setPassword2(e.target.value)}
+                          required
+                        />
+                        {errors.password2 && <div className="text-danger small mt-1">{errors.password2}</div>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Terms & Conditions */}
+                  <div className="row">
+                    <div className="col-lg-12 col-xl-12 col-md-12 col-sm-12">
+                      <div className="form-check _social_registration_form_check">
+                        <input
+                          className="form-check-input _social_registration_form_check_input"
+                          type="checkbox"
+                          id="termsCheck"
+                          required
+                        />
+                        <label className="form-check-label _social_registration_form_check_label" htmlFor="termsCheck">
+                          I agree to terms & conditions
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="row">
+                    <div className="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+                      <div className="_social_registration_form_btn _mar_t40 _mar_b60">
+                        <button type="submit" className="_social_registration_form_btn_link _btn1">
+                          Register Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Already have account? */}
+                <div className="row">
+                  <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div className="_social_registration_bottom_txt">
+                      <p className="_social_registration_bottom_txt_para">
+                        Already have an account? <Link to="/login">Sign In</Link>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </section>
+  );
 };
 
 export default Register;

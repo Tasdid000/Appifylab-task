@@ -108,12 +108,13 @@ class ReplySerializer(serializers.ModelSerializer):
     author = UserProfileSerializer(read_only=True)
     likes_count = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
-    liked_users = serializers.SerializerMethodField()   # ADD THIS
+    liked_users = serializers.SerializerMethodField()
+    shares_count = serializers.IntegerField(source='shares.count', read_only=True)
+    shared_by_user = serializers.SerializerMethodField()
 
     class Meta:
         model = Reply
-        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user', 'liked_users']
-
+        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user', 'liked_users', 'shares_count', 'shared_by_user']
     def get_likes_count(self, obj):
         return obj.likes.count()
 
@@ -126,6 +127,13 @@ class ReplySerializer(serializers.ModelSerializer):
         likes = obj.likes.all()
         return [{"user": UserProfileSerializer(like.user, context=self.context).data} 
                 for like in likes]
+    
+    def get_shares_count(self, obj):
+        return obj.shares.count()
+
+    def get_shared_by_user(self, obj):
+        user = self.context['request'].user
+        return obj.shares.filter(user=user).exists()
 
 
 # Comment Serializer (UPDATED)
@@ -135,12 +143,14 @@ class CommentSerializer(serializers.ModelSerializer):
     replies = ReplySerializer(many=True, read_only=True)
     likes_count = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
-    liked_users = serializers.SerializerMethodField()   # ADD THIS
+    liked_users = serializers.SerializerMethodField()
+    shares_count = serializers.IntegerField(source='shares.count', read_only=True)
+    shared_by_user = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
         fields = ['id', 'author', 'content', 'created_at', 'likes_count', 
-                  'liked_by_user', 'replies', 'liked_users']  # ADD liked_users here
+                  'liked_by_user', 'replies', 'liked_users', 'shares_count', 'shared_by_user']  # ADD liked_users here
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -155,6 +165,13 @@ class CommentSerializer(serializers.ModelSerializer):
         return [{"user": UserProfileSerializer(like.user, context=self.context).data} 
                 for like in likes]
 
+    def get_shares_count(self, obj):
+        return obj.shares.count()
+    
+    def get_shared_by_user(self, obj):
+        user = self.context['request'].user
+        return obj.shares.filter(user=user).exists()
+
 
 # Feed Serializer
 
@@ -163,14 +180,15 @@ class FeedSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     likes_count = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
-    liked_users = serializers.SerializerMethodField()  # New field
-
+    liked_users = serializers.SerializerMethodField()
+    shares_count = serializers.IntegerField(source='shares.count', read_only=True)
+    shared_by_user = serializers.SerializerMethodField()
     class Meta:
         model = Feed
         fields = [
             'id', 'image', 'author', 'content', 'privacy', 
             'created_at', 'likes_count', 'liked_by_user', 
-            'liked_users', 'comments'
+            'liked_users', 'shares_count', 'shared_by_user', 'comments'
         ]
 
     def get_likes_count(self, obj):
@@ -183,6 +201,13 @@ class FeedSerializer(serializers.ModelSerializer):
     def get_liked_users(self, obj):
         likes = obj.likes.all()  # Assuming FeedLike has FK to Feed called 'likes'
         return FeedLikeSerializer(likes, many=True).data
+    
+    def get_shares_count(self, obj):
+        return obj.shares.count()
+    
+    def get_shared_by_user(self, obj):
+        user = self.context['request'].user
+        return obj.shares.filter(user=user).exists()
 
 
 class UserStatsSerializer(serializers.Serializer):

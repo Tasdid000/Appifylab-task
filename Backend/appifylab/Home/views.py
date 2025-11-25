@@ -200,6 +200,18 @@ class FeedViewSet(viewsets.ModelViewSet):
         serializer = UserStatsSerializer(data)
         return Response(serializer.data)
     
+    @action(detail=True, methods=['POST'])
+    def share(self, request, pk=None):
+        feed = self.get_object()
+        share, created = FeedShare.objects.get_or_create(user=request.user, feed=feed)
+
+        if not created:
+            share.delete()
+            return Response({'status': 'unshared'})
+
+        return Response({'status': 'shared'})
+
+    
 
 # ----------------------
 # Comment ViewSet
@@ -224,6 +236,17 @@ class CommentViewSet(viewsets.ModelViewSet):
             like.delete()
             return Response({'status': 'unliked'})
         return Response({'status': 'liked'})
+    @action(detail=True, methods=['POST'])
+    def share(self, request, feed_pk=None, pk=None):
+        comment = self.get_object()
+        share, created = CommentShare.objects.get_or_create(user=request.user, comment=comment)
+
+        if not created:
+            share.delete()
+            return Response({'status': 'unshared'})
+
+        return Response({'status': 'shared'})
+
 
 # ----------------------
 # Reply ViewSet
@@ -254,3 +277,14 @@ class ReplyViewSet(viewsets.ModelViewSet):
             return Response({'status': 'unliked'})
 
         return Response({'status': 'liked'})
+    @action(detail=True, methods=['POST'])
+    def share(self, request, feed_pk=None, comment_pk=None, pk=None):
+        reply = self.get_object()
+        share, created = ReplyShare.objects.get_or_create(user=request.user, reply=reply)
+
+        if not created:
+            share.delete()
+            return Response({'status': 'unshared'})
+
+        return Response({'status': 'shared'})
+

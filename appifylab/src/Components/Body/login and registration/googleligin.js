@@ -43,7 +43,7 @@ const Googlelogin = () => {
 
     return (
         <GoogleOAuthProvider clientId={googleClientId}> {/* Use the fetched Google Client ID */}
-            <div>
+            <div className='mb-10'>
                 {error && <div className="text-red-600 text-center mb-4 bg-red-100 p-3 rounded-lg">{error}</div>}
 
                 <GoogleLogin

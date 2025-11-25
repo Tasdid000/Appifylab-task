@@ -56,6 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
+    
     auth_provider = models.CharField(
         max_length=20,
         blank=False,
@@ -171,3 +172,29 @@ class FeedLike(models.Model):
 
     class Meta:
         unique_together = ('user', 'feed')
+
+class FeedShare(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE, related_name='shares')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'feed')
+
+
+class CommentShare(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='shares')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'comment')
+
+
+class ReplyShare(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reply = models.ForeignKey(Reply, on_delete=models.CASCADE, related_name='shares')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'reply')

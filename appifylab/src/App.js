@@ -1,9 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router';
-
-import { Toaster } from "react-hot-toast";
 import MainComponents from './Components/MainComponents';
-
+import { Toaster } from "react-hot-toast";
 
 function App() {
 

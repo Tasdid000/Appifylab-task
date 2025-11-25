@@ -29,7 +29,7 @@ const AccountSettings = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-sm rounded-lg">
+    <div className="p-6 shadow-sm rounded-lg">
       <h3 className="text-2xl font-semibold text-red-600 mb-4">
         Account Deletion
       </h3>
@@ -46,7 +46,7 @@ const AccountSettings = () => {
       {/* Modal Confirmation */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+          <div className="p-6 rounded-lg shadow-xl w-full max-w-md">
             <h4 className="text-xl font-semibold text-gray-800 mb-4">
               Confirm Account Deletion
             </h4>
@@ -56,13 +56,13 @@ const AccountSettings = () => {
             </p>
             <div className="flex justify-end space-x-4">
               <button
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                className="px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                className="px-4 py-2 bg-red-600 text-gray-100 rounded-md hover:bg-red-700 transition-colors duration-200"
                 onClick={handleDeleteAccount}
               >
                 Yes, Delete

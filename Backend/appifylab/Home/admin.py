@@ -92,3 +92,21 @@ class ReplyLikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'reply', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('user__email', 'reply__content')
+#CommentShare ,ReplyShare
+@admin.register(FeedShare)
+class FeedShareAdmin(admin.ModelAdmin):
+    list_display = ('user', 'feed', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__email', 'feed__feed_title')
+
+@admin.register(CommentShare)
+class CommentShareAdmin(admin.ModelAdmin):
+    list_display = ('user', 'comment', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__email', 'comment__content')
+    
+@admin.register(ReplyShare)
+class ReplyShareAdmin(admin.ModelAdmin):
+    list_display = ('user', 'reply', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__email', 'reply__content')

@@ -1,29 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Mail, Lock, Eye, EyeOff} from "lucide-react";
-import './styles.css';
 import Googlelogin from './googleligin';
 import { Link } from 'react-router-dom';
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
 
   const submit = async (e) => {
     e.preventDefault();
     const user = { email, password };
-
     try {
       const { data } = await axios.post("http://127.0.0.1:8000/token/", user);
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
-      window.location.reload("/blog");
+      window.location.href = "/";
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("Invalid email or password");
@@ -34,92 +27,142 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-500">
-      <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col lg:flex-row">
+    <section className="_social_login_wrapper _layout_main_wrapper">
+      {/* Background Shapes */}
+      <div className="_shape_one">
+        <img src="assets/shape1.svg" alt="" className="_shape_img" />
+        <img src="assets/dark_shape.svg" alt="" className="_dark_shape" />
+      </div>
+      <div className="_shape_two">
+        <img src="assets/shape2.svg" alt="" className="_shape_img" />
+        <img src="assets/dark_shape1.svg" alt="" className="_dark_shape _dark_shape_opacity" />
+      </div>
+      <div className="_shape_three">
+        <img src="assets/shape3.svg" alt="" className="_shape_img" />
+        <img src="assets/dark_shape2.svg" alt="" className="_dark_shape _dark_shape_opacity" />
+      </div>
 
-        {/* Left Side - Image */}
-        <div className="hidden lg:block lg:w-1/2">
-          <img
-            src='/assets/login.png'
-            alt="Login Visual"
-            className="w-full h-full"
-          />
-        </div>
-        <div className="w-full lg:w-1/2 p-8 mt-10 mb-10">
-          <h3 className="text-3xl font-bold text-center text-gray-800 mb-6">Welcome Back</h3>
-
-          {error && (
-            <div className="text-red-600 text-center mb-4 border border-red-300 bg-red-50 p-2 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={submit} className="space-y-6 mt-10">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500" />
-                <input
-                  className="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-normal"
-                  style={{ fontSize: "15px" }}
-                  placeholder="Enter your email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500" />
-                <input
-                  className="w-full pl-12 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{ fontSize: "15px" }}
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <div
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-blue-500 hover:text-gray-700"
-                  onClick={togglePasswordVisibility}
-                >
-                  {showPassword ? <EyeOff /> : <Eye />}
+      <div className="_social_login_wrap">
+        <div className="container">
+          <div className="row align-items-center">
+            {/* Left Side - Image */}
+            <div className="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+              <div className="_social_login_left">
+                <div className="_social_login_left_image">
+                  <img src="assets/login.png" alt="Login" className="_left_img" />
                 </div>
               </div>
             </div>
-            {/* Submit Button */}
-            <div>
-              <button
-                type="submit"
-                className=" px-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Log In
-              </button>
+
+            {/* Right Side - Form */}
+            <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+              <div className="_social_login_content">
+                {/* Logo */}
+                <div className="_social_login_left_logo _mar_b28">
+                  <img src="assets/logo.svg" alt="Logo" className="_left_logo" />
+                </div>
+
+                <p className="_social_login_content_para _mar_b8">Welcome back</p>
+                <h4 className="_social_login_content_title _titl4 _mar_b50">Login to your account</h4>
+
+                {/* Google Login */}
+                <div className="_mar_b40 text-center">
+                  <Googlelogin />
+                </div>
+
+                {/* OR Line */}
+                <div className="_social_login_content_bottom_txt _mar_b40">
+                  <span>Or</span>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="alert alert-danger text-center mb-4 py-2 rounded">
+                    {error}
+                  </div>
+                )}
+
+                {/* Login Form */}
+                <form className="_social_login_form" onSubmit={submit}>
+                  <div className="row">
+                    {/* Email */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_login_form_input _mar_b14">
+                        <label className="_social_login_label _mar_b8">Email</label>
+                        <input
+                          type="email"
+                          className="form-control _social_login_input"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <div className="_social_login_form_input _mar_b14">
+                        <label className="_social_login_label _mar_b8">Password</label>
+                        <input
+                          type="password"
+                          className="form-control _social_login_input"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Remember me + Forgot password */}
+                  <div className="row">
+                    <div className="col-lg-6 col-xl-6 col-md-6 col-sm-12">
+                      <div className="form-check _social_login_form_check">
+                        <input
+                          className="form-check-input _social_login_form_check_input"
+                          type="checkbox"
+                          id="rememberMe"
+                        />
+                        <label className="form-check-label _social_login_form_check_label" htmlFor="rememberMe">
+                          Remember me
+                        </label>
+                      </div>
+                    </div>
+                    <div className="col-lg-6 col-xl-6 col-md-6 col-sm-12">
+                      <div className="_social_login_form_left">
+                        <p className="_social_login_form_left_para">Forgot password?</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="row">
+                    <div className="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+                      <div className="_social_login_form_btn _mar_t40 _mar_b60">
+                        <button type="submit" className="_social_login_form_btn_link _btn1">
+                          Login now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Sign Up Link */}
+                <div className="row">
+                  <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div className="_social_login_bottom_txt">
+                      <p className="_social_login_bottom_txt_para">
+                        Don't have an account? <Link to="/register">Create New Account</Link>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </form>
-          <div className="mt-6 px-16 text-center">
-            <p className="mb-2">OR</p>
-            <Googlelogin />
-          </div>
-          {/* Register Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-blue-500 hover:underline hover:text-blue-600">Sign up</Link>
-            </p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
